@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title> Controller Top </title>
+    </head>
+
+    <body>
+        <h2> Registered Command </h2>
+
+        <div id="buttonContainer">
+            <!-- ボタンが追加される場所 -->
+        </div>
+
+        <form id="submitButtonForm" method="post" action="">
+            <!-- フォームの他の入力項目 -->
+            <input type="hidden" id="clickedButton" name="toggle" value="">
+        </form>
+
+        <!--script src="script.js"></script-->
+        <script>
+            var datalist = JSON.parse('{{ data | tojson | safe }}');
+            console.log(Object.keys(datalist));
+
+            document.addEventListener('DOMContentLoaded', function() {
+                const buttonContainer = document.getElementById('buttonContainer');
+
+                //const buttons = ["buttonA", "buttonB", "buttonC", "buttonD"]
+                const buttons = Object.keys(datalist);
+
+                // 各ボタンに対してDOM要素を作成して追加する
+                buttons.forEach(buttonName => {
+                    const button = document.createElement('button');
+                    button.textContent = buttonName;
+                    button.addEventListener('click', function() {
+                        // ボタンがクリックされた時の処理を記述
+                        document.getElementById('clickedButton').value = buttonName;
+                        submitButtonForm.submit();
+                        console.log(`Clicked ${buttonName}`);
+                    });
+                    buttonContainer.appendChild(button);
+                });
+            });
+        </script>
+        
+        <h2> Add New Command </h2>
+        <form action="{{url_for('add_cmd')}}", method="POST", novalidate="novalidate">
+            <input type="submit", name="move2add", value="+"/>
+        </form>
+    </body>
+</html>

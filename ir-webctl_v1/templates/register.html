@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title> Add New Command </title>
+        <script>
+            function validateForm() {
+                var textInput = document.getElementById('command').value;
+                if (textInput === '') {
+                    alert('Empty, please input command name');
+                    return false;
+                }
+                alert('Click below OK, then push Button towards ir reciever')
+                return true;
+            }
+        </script>
+    </head>
+
+    <body>
+        <h2> Add New Command </h2>
+        <form action="{{url_for('add_post')}}", method="POST", onsubmit="return validateForm()">
+            <table>
+                <tr>
+                    <td> Input Command Name </td>
+                    <td>
+                        <!--input type="text", name="command", value="{{command}}", placeholder="cmdname"/-->
+                        <input type="text", id="command", name="command", value="{{command}}", placeholder="cmdname"/>
+                    </td>
+                </tr>
+            </table>
+            <input type="submit", name="move2pst", value="Add">
+        </form>
+    </body>
+</html>>
