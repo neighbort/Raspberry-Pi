@@ -11,7 +11,7 @@ Raspberry PiをWebサーバーにして、同じWiFiネットワークに接続�
 ## 始め方
 docsフォルダ内の「使い方_v1.0」を参照ください。
 配線は下図の通りです。
-![gif](https://github.com/neighbort/Raspberry-Pi/edit/main/IR-WebRimocon_v1/docs/組立配線.jpg)
+![配線図](IR-WebRimocon_v1/docs/組立配線.jpg)
 
 ## テスト環境
 ・ハード
