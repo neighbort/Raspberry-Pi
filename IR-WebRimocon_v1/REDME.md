@@ -1,8 +1,20 @@
-# name
+# IR-WebRimocon_v1
 
 image or gif
 
-## Overview
+## 概要
+Raspberry Piを赤外線リモコンとして扱う為のプロジェクトです。
+赤外線受信機を使って家庭用リモコンの赤外線コードを記憶し、赤外線LEDで記憶した赤外線コードを発信することができます。
+Raspberry PiをWebサーバーにして、同じWiFiネットワークに接続したスマホやノートパソコンから一連の赤外線操作を指示することが出来ます。
+赤外線信号は環境によりますが凡そ3m先まで届きます。
+
+## 始め方
+docsフォルダ内の「使い方_v1.0」
+![gif](https://github.com/neighbort/Raspberry-Pi/edit/main/IR-WebRimocon_v1/docs/組立配線.jpeg)
+
+
+## Features
+
 
 ## Requirement
 
