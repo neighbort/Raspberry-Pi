@@ -9,25 +9,15 @@ Raspberry PiをWebサーバーにして、同じWiFiネットワークに接続�
 赤外線信号は環境によりますが凡そ3m先まで届きます。
 
 ## 始め方
-docsフォルダ内の「使い方_v1.0」
-![gif](https://github.com/neighbort/Raspberry-Pi/edit/main/IR-WebRimocon_v1/docs/組立配線.jpeg)
+docsフォルダ内の「使い方_v1.0」を参照ください。
+配線は下図の通りです。
+![gif](https://github.com/neighbort/Raspberry-Pi/edit/main/IR-WebRimocon_v1/docs/組立配線.jpg)
 
+## テスト環境
+・ハード
+Raspberry Pi 3B
+・ソフト
+Flask ver.
 
-## Features
+## 参考
 
-
-## Requirement
-
-## Usage
-
-## Features
-
-## Reference
-
-## Author
-
-[twitter](https://twitter.com/Kotabrog)
-
-## Licence
-
-[MIT](https://......)
