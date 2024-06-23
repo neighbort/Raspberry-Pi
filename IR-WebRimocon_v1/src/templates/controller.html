@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title> Controller Top </title>
+        <!--以下はbootstrapの標準クラスを使用する為のコード-->
+        <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    </head>
+
+
+    <body>
+        <h2> Registered Command </h2>
+
+        <!--以下登録済みのコマンドの数だけボタンを表示するコード-->
+        <div id="buttonContainer">
+            <!-- ボタンが追加される場所 -->
+        </div>
+
+        <form id="submitButtonForm" method="post" action="">
+            <!-- フォームの他の入力項目 -->
+            <input type="hidden" id="clickedButton" name="toggle" value="">
+        </form>
+
+        <!--以下は引数"data"の内容に応じてボタンの数と表示を調整するJavascriptコード-->
+            <!--例：data=["A", "B", "C"]の場合、Aボタン、Bボタン、Cボタンの三つを表示-->
+            <!--例：data=["tv", "ac"]の場合、tvボタン、acボタンの二つを表示-->
+        <script>
+            var datalist = JSON.parse('{{ data | tojson | safe }}');
+            console.log(Object.keys(datalist));
+
+            document.addEventListener('DOMContentLoaded', function() {
+                const buttonContainer = document.getElementById('buttonContainer');
+                const buttons = Object.keys(datalist);
+
+                // 各ボタンに対してDOM要素を作成して追加する
+                buttons.forEach(buttonName => {
+                    const button = document.createElement('button');
+                    button.textContent = buttonName;
+                    button.addEventListener('click', function() {
+                        // ボタンがクリックされた時の処理を記述
+                        document.getElementById('clickedButton').value = buttonName;
+                        submitButtonForm.submit();
+                        console.log(`Clicked ${buttonName}`);
+                    });
+                    button.className = 'btn btn-success ml-2 rounded';
+                    buttonContainer.appendChild(button);
+                });
+            });
+        </script>
+        
+        <h3> In One Go </h3>
+        <!--以下は"AllOn"と"AllOff"ボタンを表示するコード-->
+        <form action="", method="POST", novalidate="novalidate">
+            <input type="submit", name="toggle", value="AllOn", class="btn btn-secondary my-1 rounded"/>
+        </form>
+        <form action="", method="POST", novalidate="novalidate">
+            <input type="submit", name="toggle", value="AllOff", class="btn btn-secondary my-1 rounded"/>
+        </form>
+        
+        <!--以下でコマンド登録画面に遷移する為のボタンを表示するコード-->
+        <h2> Add New Command </h2>
+        <form action="{{url_for('add_cmd')}}", method="POST", novalidate="novalidate">
+            <!--以下ボタンのコード、classでbootstrapのボタン装飾を指示-->
+            <input type="submit", name="move2add", value="+", class="btn btn-primary rounded-circle"/>
+        </form>
+    </body>
+</html>
