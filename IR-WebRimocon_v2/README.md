@@ -1,6 +1,6 @@
 # IR-WebRimocon_v2
 ![IR-WebRimocon](docs/IMG_3026.jpeg)
-![IR-WebRimocon](docs/IMG_3026.jpeg)
+![IR-WebRimocon](docs/IMG_3025.jpeg)
 
 ## 概要
 Raspberry Piを赤外線リモコンとして扱う為のプロジェクトです。
