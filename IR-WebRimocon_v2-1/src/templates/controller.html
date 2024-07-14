@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title> Controller Top </title>
+        <!--以下はbootstrapの標準クラスを使用する為のコード-->
+        <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    </head>
+
+
+    <body>
+        <h2> Registered Command </h2>
+
+        <!--以下登録済みのコマンドの数だけボタンを表示するコード-->
+        <div id="buttonContainer">
+            <!-- ボタンが追加される場所 -->
+        </div>
+
+        <form id="submitButtonForm" method="post" action="">
+            <!-- フォームの他の入力項目 -->
+            <input type="hidden" id="clickedButton" name="toggle" value="">
+        </form>
+
+        <!--以下は引数"data"の内容に応じてボタンの数と表示を調整するJavascriptコード-->
+            <!--例：data=["A", "B", "C"]の場合、Aボタン、Bボタン、Cボタンの三つを表示-->
+            <!--例：data=["tv", "ac"]の場合、tvボタン、acボタンの二つを表示-->
+        <script>
+            var datalist = JSON.parse('{{ data | tojson | safe }}');
+            console.log(Object.keys(datalist));
+
+            document.addEventListener('DOMContentLoaded', function() {
+                const buttonContainer = document.getElementById('buttonContainer');
+                const buttons = Object.keys(datalist);
+
+                // 各ボタンに対してDOM要素を作成して追加する
+                buttons.forEach(buttonName => {
+                    const button = document.createElement('button');
+                    button.textContent = buttonName;
+                    button.addEventListener('click', function() {
+                        // ボタンがクリックされた時の処理を記述
+                        document.getElementById('clickedButton').value = buttonName;
+                        submitButtonForm.submit();
+                        console.log(`Clicked ${buttonName}`);
+                    });
+                    button.className = 'btn btn-success ml-2 rounded';
+                    buttonContainer.appendChild(button);
+                });
+            });
+        </script>
+        
+        <h3> In One Go </h3>
+        <!--以下は"AllOn"と"AllOff"ボタンを表示するコード-->
+        <form action="", method="POST", novalidate="novalidate">
+            <input type="submit", name="toggle", value="AllOn", class="btn btn-secondary my-1 rounded"/>
+        </form>
+        <form action="", method="POST", novalidate="novalidate">
+            <input type="submit", name="toggle", value="AllOff", class="btn btn-secondary my-1 rounded"/>
+        </form>
+        
+        <!--以下でコマンド登録画面に遷移する為のボタンを表示するコード-->
+        <h2> Add New Command </h2>
+        <form action="{{url_for('add_cmd')}}", method="POST", novalidate="novalidate">
+            <!--以下ボタンのコード、classでbootstrapのボタン装飾を指示-->
+            <input type="submit", name="move2add", value="+", class="btn btn-primary rounded-circle"/>
+        </form>
+        
+
+        <h2> Temperature and Humidity </h2>
+        <div id="current-temp"> Temperature Measuring... </div>
+        <div id="current-humd"> Humidity Measuring... </div>
+        <canvas id="sensorChart" width=600px height=300px></canvas>
+        <script>
+        async function fetchSensorData() {
+            const response = await fetch('/THsensor');
+            const datath = await response.json();
+            return datath;
+        }
+        async function updateChart(chart) {
+            const data = await fetchSensorData();
+            if (!data.error) {
+                const timeNow = new Date().toLocaleTimeString();
+                chart.data.labels.push(timeNow);
+                chart.data.datasets[0].data.push(data.T);
+                chart.data.datasets[1].data.push(data.H);
+                if (chart.data.labels.length > 10) {
+                    chart.data.labels.shift();
+                    chart.data.datasets[0].data.shift();
+                    chart.data.datasets[1].data.shift();
+                }
+                chart.update();
+            }
+            document.getElementById("current-temp").textContent = "Current Temp = " + data["T"].toFixed(1) + "C";
+            document.getElementById("current-humd").textContent = "Current Humd = " + data["H"].toFixed(0) + "%";
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            const ctx = document.getElementById('sensorChart').getContext('2d');
+            const sensorChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Temperature (°C)',
+                        data: [],
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    }, {
+                        label: 'Humidity (%)',
+                        data: [],
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    }]
+                },
+                options: {
+                    responsive: false,
+                    scales: {
+                        x: {
+                            display: true,
+                            title: {
+                                display: true,
+                                text: 'Time'
+                            }
+                        },
+                        y: {
+                            display: true,
+                            title: {
+                                display: true,
+                                text: 'Value'
+                            }
+                        }
+                    }
+                }
+            });
+
+            setInterval(() => {
+                updateChart(sensorChart);
+            }, 5000);  // 5秒ごとにデータを更新
+        });
+    </script>
+
+    </body>
+</html>
