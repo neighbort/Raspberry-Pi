@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title> Add New Command </title>
+        <!--以下コントローラ画面に戻るボタンを追加-->
+        <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+        
+        <!--以下はAddボタンが押された際にalert関数を用いてメッセージを表示するJavascriptコード-->
+        <script>
+            function validateForm() {
+                var textInput = document.getElementById('command').value;
+                if (textInput === '') {
+                    alert('Empty, please input command name');      //空だったら警告を表示しfalseをリターン
+                    return false;
+                }
+                alert('Click below OK or Close, then push Button towards ir reciever')  //文字を記入してあれば指示を表示しtrueをリターン
+                return true;
+            }
+        </script>
+    </head>
+
+    <body>
+        <h2> Add New Command </h2>
+        <!--以下はコマンドネームの入力フォームとボタンを出力するコード-->
+        <!--onsubmitはform送信時にValidateForm()を実行し、リターンがTrueであればそのまま、Falseであればform送信しない-->
+        <form action="{{url_for('add_post')}}", method="POST", onsubmit="return validateForm()">
+            <table>
+                <tr>
+                    <td> Input Command Name </td>
+                    <td>
+                        <input type="text", id="command", name="command", value="{{command}}", placeholder="cmdname", class="form-control"/>
+                    </td>
+                </tr>
+            </table>
+            <input type="submit", name="move2pst", value="Add", class="btn btn-primary">
+        </form>
+    </body>
+</html>>
