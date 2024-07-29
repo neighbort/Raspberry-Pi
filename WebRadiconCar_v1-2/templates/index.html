@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>DeviceMotion Test</title>
+  </head>
+  <body>
+    <div>
+      <button onClick="deviceMotionRequest()">Click</button>
+      <span id="x">0</span>
+      <span id="y">0</span>
+      <span id="z">0</span>
+    </div>
+    <script>
+      function deviceMotionRequest () {
+        //if (DeviceMotionEvent.requestPermission) {
+        if (DeviceOrientationEvent.requestPermission) {
+        //  DeviceMotionEvent.requestPermission()
+          DeviceOrientationEvent.requestPermission()
+            .then(permissionState => {
+              if (permissionState === 'granted') {
+                window.addEventListener("devicemotion", function (event) {
+                  if (!event.accelerationIncludingGravity) {
+                    alert('event.accelerationIncludingGravity is null');
+                    return;
+                  }
+                  document.getElementById('x').innerHTML = event.accelerationIncludingGravity.x;
+                  document.getElementById('y').innerHTML = event.accelerationIncludingGravity.y;
+                  document.getElementById('z').innerHTML = event.accelerationIncludingGravity.z;
+                })
+              }
+            })
+            .catch(console.error);
+        } else {
+          alert('DeviceMotionEvent.requestPermission is not found')
+        }
+      }
+    </script>
+  </body>
+</html>
+<!--
+<html>
+    <head>
+        <link rel="stylesheet"
+        href="http://code.jquery.com/mobile/1.0a2/jquery.mobile-1.0a2.min.css"></link>
+        <script src="http://code.jquery.com/jquery-1.4.4.min.js"></script>
+        <script src="http://code.jquery.com/mobile/1.0a2/jquery.mobile-1.0a2.min.js"></script>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    </head>
+
+    <body>
+        <h2> Contact Completed </h2>
+        <button type="button" class="btn"> hello </button>
+        <input id="button01" type="button" value="ボタン1"/>
+
+        <script>
+            document.write("1")
+            $(function(){
+                $('button').button();
+                document.write("2")
+                if(window.DeviceOrientationEvent){
+                    document.write("here comes the sun1");
+                    if(DeviceOrientationEvent.requestPermission){
+                        document.write("here comes sun2");
+                        //$(".btn").on("click", function(){
+                            document.write("finally");
+                            DeviceOrientationEvent.requestPermission().then(function(response){
+                                document.write("it happend")
+                                if(response === "granted"){
+                                    $(window).on("devicemotion", acc);
+                                    document.write("aaccepted")
+                                }
+                            });
+                        //});
+                    }
+                }
+            
+                function acc(){
+                    var x = 100 * event.accelarationIncludingGravity.x;
+                    document.write(x)
+                }
+            })
+        </script>
+
+    
+    </body>
+</html>
+-->
