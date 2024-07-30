@@ -1,87 +1,110 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>DeviceMotion Test</title>
-  </head>
-  <body>
-    <div>
-      <button onClick="deviceMotionRequest()">Click</button>
-      <span id="x">0</span>
-      <span id="y">0</span>
-      <span id="z">0</span>
-    </div>
-    <script>
-      function deviceMotionRequest () {
-        //if (DeviceMotionEvent.requestPermission) {
-        if (DeviceOrientationEvent.requestPermission) {
-        //  DeviceMotionEvent.requestPermission()
-          DeviceOrientationEvent.requestPermission()
-            .then(permissionState => {
-              if (permissionState === 'granted') {
-                window.addEventListener("devicemotion", function (event) {
-                  if (!event.accelerationIncludingGravity) {
-                    alert('event.accelerationIncludingGravity is null');
-                    return;
-                  }
-                  document.getElementById('x').innerHTML = event.accelerationIncludingGravity.x;
-                  document.getElementById('y').innerHTML = event.accelerationIncludingGravity.y;
-                  document.getElementById('z').innerHTML = event.accelerationIncludingGravity.z;
-                })
-              }
-            })
-            .catch(console.error);
-        } else {
-          alert('DeviceMotionEvent.requestPermission is not found')
+<head>
+    <title>2WD Radicon Car Controller</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .triangle-button {
+            width: 0;
+            height: 0;
+            border-left: 30px solid transparent;
+            border-right: 30px solid transparent;
+            cursor: pointer;
+            display: inline-block;
         }
-      }
-    </script>
-  </body>
-</html>
-<!--
-<html>
-    <head>
-        <link rel="stylesheet"
-        href="http://code.jquery.com/mobile/1.0a2/jquery.mobile-1.0a2.min.css"></link>
-        <script src="http://code.jquery.com/jquery-1.4.4.min.js"></script>
-        <script src="http://code.jquery.com/mobile/1.0a2/jquery.mobile-1.0a2.min.js"></script>
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-    </head>
+        .triangle-top {
+            border-bottom: 60px solid #007bff; /* 上向き三角形 */
+        }
+        .triangle-bottom {
+            border-top: 60px solid #007bff; /* 下向き三角形 */
+        }
+        .triangle-right {
+            border-top: 30px solid transparent;
+            border-bottom: 30px solid transparent;
+            border-left: 60px solid #007bff; /* 右向き三角形 */
+        }
+        .triangle-left {
+            border-top: 30px solid transparent;
+            border-bottom: 30px solid transparent;
+            border-right: 60px solid #007bff; /* 左向き三角形 */
+        }
+        .btn-custom-rounded {
+            border-radius: 50px;
+        }
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 400px;
+        }
+        .direction-buttons {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .horizontal-buttons {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .horizontal-buttons > div {
+            margin: 0 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 class="text-center mt-5">2WD Radicon Car Controller</h2>
+        <div class="button-container">
+            <div class="direction-buttons">
+                <!-- 上方向のボタン -->
+                <div>
+                    <button onmouseover="controlCAR('go_forw')" onmouseout="controlCAR('gf_stay')"
+                            ontouchstart="controlCAR('go_forw')" ontouchend="controlCAR('gf_stay')"
+                            class="triangle-button triangle-top">
+                    </button>
+                </div>
+                <!-- 左右のボタンを同じ行に並べる -->
+                <div class="horizontal-buttons">
+                    <div>
+                        <button onmouseover="controlCAR('turn_left')" onmouseout="controlCAR('tl_stay')"
+                                ontouchstart="controlCAR('turn_left')" ontouchend="controlCAR('tl_stay')"
+                                class="triangle-button triangle-left">
+                        </button>
+                    </div>
+                    <div>
+                        <button onmouseover="controlCAR('turn_right')" onmouseout="controlCAR('tr_stay')"
+                                ontouchstart="controlCAR('turn_right')" ontouchend="controlCAR('tr_stay')"
+                                class="triangle-button triangle-right">
+                        </button>
+                    </div>
+                </div>
+                <!-- 下方向のボタン -->
+                <div>
+                    <button onmouseover="controlCAR('go_back')" onmouseout="controlCAR('gb_stay')"
+                            ontouchstart="controlCAR('go_back')" ontouchend="controlCAR('gb_stay')"
+                            class="triangle-button triangle-bottom">
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="text-center mt-5">
+            <button onclick="controlCAR('high')" class="btn btn-primary btn-custom-rounded mx-2">High Speed</button>
+            <button onclick="controlCAR('medium')" class="btn btn-primary btn-custom-rounded mx-2">Medium Speed</button>
+            <button onclick="controlCAR('low')" class="btn btn-primary btn-custom-rounded mx-2">Low Speed</button>
+        </div>
+    </div>
 
-    <body>
-        <h2> Contact Completed </h2>
-        <button type="button" class="btn"> hello </button>
-        <input id="button01" type="button" value="ボタン1"/>
-
-        <script>
-            document.write("1")
-            $(function(){
-                $('button').button();
-                document.write("2")
-                if(window.DeviceOrientationEvent){
-                    document.write("here comes the sun1");
-                    if(DeviceOrientationEvent.requestPermission){
-                        document.write("here comes sun2");
-                        //$(".btn").on("click", function(){
-                            document.write("finally");
-                            DeviceOrientationEvent.requestPermission().then(function(response){
-                                document.write("it happend")
-                                if(response === "granted"){
-                                    $(window).on("devicemotion", acc);
-                                    document.write("aaccepted")
-                                }
-                            });
-                        //});
-                    }
-                }
-            
-                function acc(){
-                    var x = 100 * event.accelarationIncludingGravity.x;
-                    document.write(x)
-                }
+    <script>
+        function controlCAR(action) {
+            fetch(`/${action}`, {
+                method: 'POST'
             })
-        </script>
-
-    
-    </body>
+            .then(response => response.text())
+            .then(data => console.log(data))
+            .catch(error => console.error('Error:', error));
+        }
+    </script>
+</body>
 </html>
--->
