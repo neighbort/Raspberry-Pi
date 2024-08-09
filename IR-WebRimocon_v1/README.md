@@ -1,5 +1,5 @@
 # IR-WebRimocon_v1
-![IR-WebRimocon](docs/messageImage_1718812945506.jpg)
+![IR-WebRimocon](docs/FrontView.jpeg)
 
 ## 概要
 Raspberry Piを赤外線リモコンとして扱う為のプロジェクトです。
@@ -10,7 +10,7 @@ Raspberry PiをWebサーバーにして、同じWiFiネットワークに接続�
 ## 始め方
 docsフォルダ内の「使い方_v1.0」を参照ください。
 配線は下図の通りです。
-![配線図](docs/connection_v1.0.jpg)
+![配線図](docs/connection_v1-1.jpeg)
 
 ## 特徴
 Flaskを用いてRaspberry PiをWebサーバにし、同一WiFiネットワークに接続した別機器から赤外線モジュールを操作できます。
