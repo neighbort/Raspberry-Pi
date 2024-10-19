@@ -108,9 +108,9 @@ else:
                 y_value = abs_event.event.value
                 print(f'Y軸の値: {y_value}')
                 angle = math.degrees(math.atan2(y_value, x_value))
-        if abs(y_value) < 10000:
-            control(0)
-        elif y_value < -10000:
-            control(-1)
-        elif y_value > 10000:
-            control(1)
+#        if abs(y_value) < 10000:
+#            control(0)
+#        elif y_value < -10000:
+#            control(-1)
+#        elif y_value > 10000:
+#            control(1)
