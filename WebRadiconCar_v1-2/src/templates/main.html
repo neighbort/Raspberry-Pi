@@ -1,0 +1,332 @@
+<html>
+<head>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .triangle-button {
+            width: 0;
+            height: 0;
+            border-left: 30px solid transparent;
+            border-right: 30px solid transparent;
+            cursor: pointer;
+            display: inline-block;
+        }
+        .triangle-top {
+            width: 0;
+            height: 0;
+            border-left: 30px solid transparent;
+            border-right: 30px solid transparent;
+            border-bottom: 60px solid #4285F4; /* Change this color to your preferred color */
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+        }
+        .triangle-botm {
+            width: 0;
+            height: 0;
+            border-left: 30px solid transparent;
+            border-right: 30px solid transparent;
+            border-top: 60px solid #EA4335; /* Change this color to your preferred color */
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+        }
+        .triangle-right {
+            width: 0;
+            height: 0;
+            border-top: 30px solid transparent;
+            border-bottom: 30px solid transparent;
+            border-left: 60px solid #FBBC05; /* 右向きの三角形の色を設定 */
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+        }
+        .triangle-left {
+            width: 0;
+            height: 0;
+            border-top: 30px solid transparent;
+            border-bottom: 30px solid transparent;
+            border-right: 60px solid #34A853; /* 右向きの三角形の色を設定 */
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+        }
+        .btn-custom-rounded {
+            border-radius: 50px;
+        }
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 400px;
+        }
+        .direction-buttons {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .horizontal-buttons {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .horizontal-buttons > div {
+            margin: 0 10px;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        #mouse-position, #drag-distance {
+            font-size: 2em;
+            margin-top: 20px;
+        }
+        .area {
+            width: 300px;
+            height: 300px;
+            margin: 50px auto;
+            border: 2px solid #000;
+            position: relative;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Raspberry Pi Radicon Car</h1>
+    
+    <div class="button-container">
+        <div class="direction-buttons">
+            <div>
+                <button onmouseover="controlCAR('go_forw')" onmouseout="controlCAR('gf_stay')"
+                        ontouchstart="controlCAR('go_forw')" ontouchend="controlCAR('gf_stay')"
+                        class="triangle-button triangle-top">
+                </button>
+                <div class="horizontal-buttons">
+                    <div>
+                        <button onmouseover="controlCAR('turn_left')" onmouseout="controlCAR('tl_stay')"
+                                ontouchstart="controlCAR('turn_left')" ontouchend="controlCAR('tl_stay')"
+                                class="triangle-button triangle-left">
+                        </button>
+                    </div>
+                    <div>
+                        <button onmouseover="controlCAR('turn_right')" onmouseout="controlCAR('tr_stay')"
+                                ontouchstart="controlCAR('turn_right')" ontouchend="controlCAR('tr_stay')"
+                                class="triangle-button triangle-right">
+                        </button>
+                    </div>
+                </div>
+                <div>
+                    <button onmouseover="controlCAR('go_back')" onmouseout="controlCAR('gb_stay')"
+                            ontouchstart="controlCAR('go_back')" ontouchend="controlCAR('gb_stay')"
+                            class="triangle-button triangle-botm">
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    
+    <img src="/video_feed" width="640" height="480">
+    <br>
+    
+    <table>
+    <tr>
+        <td><form action='' method='post', novalidate="novalidate">
+            <input type="submit", name="led", value="yellow"/>
+        </form></td>
+        <td><form action='' method='post', novalidate="novalidate">
+            <input type="submit", name="led", value="purple"/>
+        </form></td>
+        <td><form action='' method='post', novalidate="novalidate">
+            <input type="submit", name="led", value="skyblue"/>
+        </form></td>
+        <td><form action='' method='post', novalidate="novalidate">
+            <input type="submit", name="led", value="off"/>
+        </form></td>
+    </tr>
+    </table>
+    
+    <canvas id="accelChart" width="640" height="400"></canvas>
+    
+    <table>
+    <tr>
+        <td><p>  X: <span id="xValue">0</span></p></td>
+        <td><p>  Y: <span id="yValue">0</span></p></td>
+        <td><p>  Z: <span id="zValue">0</span></p></td>
+    </tr>
+    </table>
+    
+    <script>
+        function controlCAR(action) {
+            fetch(`/${action}`, {
+                method: 'POST'
+            })
+            .then(response => response.text())
+            .then(data => console.log(data))
+            .catch(error => console.error('Error:', error));
+        }
+        
+        async function fetchSensorData() {
+            const response = await fetch('/data');
+            const datath = await response.json();
+            return datath;
+        }
+        
+        async function updateChart(chart) {
+            const data = await fetchSensorData();
+            if (!data.error) {
+                const timeNow = new Date().toLocaleTimeString();
+                chart.data.labels.push(timeNow);
+                chart.data.datasets[0].data.push(data.x);
+                chart.data.datasets[1].data.push(data.y);
+                chart.data.datasets[2].data.push(data.z);
+                if (chart.data.labels.length > 10) {
+                    chart.data.labels.shift();
+                    chart.data.datasets[0].data.shift();
+                    chart.data.datasets[1].data.shift();
+                    chart.data.datasets[2].data.shift();
+                }
+                chart.update();
+            }
+            document.getElementById("xValue").textContent = "X = " + data["x"].toFixed(3) + "g";
+            document.getElementById("yValue").textContent = "Y = " + data["y"].toFixed(3) + "g";
+            document.getElementById("zValue").textContent = "Z = " + data["z"].toFixed(3) + "g";
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            const ctx = document.getElementById('accelChart').getContext('2d');
+            const sensorChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'x (g)',
+                        data: [],
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    }, {
+                        label: 'y (g)',
+                        data: [],
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    }, {
+                        label: 'z (g)',
+                        data: [],
+                        borderColor: 'rgba(54, 235, 132, 1)',
+                        backgroundColor: 'rgba(54, 235, 132, 0.2)',
+                    }]
+                },
+                options: {
+                    responsive: false,
+                    scales: {
+                        x: {
+                            display: true,
+                            title: {
+                                display: true,
+                                text: 'Time'
+                            }
+                        },
+                        y: {
+                            display: true,
+                            title: {
+                                display: true,
+                                text: 'Value'
+                            }
+                        }
+                    }
+                }
+            });
+
+            setInterval(() => {
+                updateChart(sensorChart);
+            }, 2000);  // 5秒ごとにデータを更新
+        });
+        
+/*
+        document.addEventListener("mousedown", function() {
+            console.log("Hello World");
+            var ctx = document.getElementById('accelChart').getContext('2d');
+            var chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [
+                        {
+                            label: 'X',
+                            borderColor: 'red',
+                            data: [],
+                            fill: false
+                        },
+                        {
+                            label: 'Y',
+                            borderColor: 'green',
+                            data: [],
+                            fill: false
+                        },
+                        {
+                            label: 'Z',
+                            borderColor: 'blue',
+                            data: [],
+                            fill: false
+                        }
+                    ]
+                },
+                options: {
+                    animation: false,
+                    scales: {
+                        x: {
+                            display: true,
+                            title: {
+                                display: true,
+                                text: 'Time'
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Acceleration'
+                            }
+                        }
+                    }
+                }
+            });
+            
+            console.log("Hello world 2");
+
+            function fetchData() {
+                fetch('/data')
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log("Hello world 3");
+                        var now = new Date();
+                        chart.data.labels.push(now.getSeconds());
+                        chart.data.datasets[0].data.push(data.x);
+                        chart.data.datasets[1].data.push(data.y);
+                        chart.data.datasets[2].data.push(data.z);
+                        if (chart.data.labels.length > 50) {
+                            chart.data.labels.shift();
+                            chart.data.datasets[0].data.shift();
+                            chart.data.datasets[1].data.shift();
+                            chart.data.datasets[2].data.shift();
+                        }
+                        chart.update();
+                        // 数値表示の更新
+                        document.getElementById('xValue').textContent = data.x;
+                        document.getElementById('yValue').textContent = data.y;
+                        document.getElementById('zValue').textContent = data.z;
+                    })
+                    .catch(error => {
+                        console.error('Error fetching data:', error);
+                    });
+            }
+            setInterval(fetchData, 1000);
+        });
+*/
+
+    </script>
+    
+</body>
+</html>

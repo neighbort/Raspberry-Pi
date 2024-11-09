@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>2WD Radicon Car Controller </title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        .triangle-button {
+            width: 0;
+            height: 0;
+            border-left: 30px solid transparent;
+            border-right: 30px solid transparent;
+            cursor: pointer;
+            display: inline-block;
+        }
+        
+        .triangle-top {
+            width: 0;
+            height: 0;
+            border-left: 30px solid transparent;
+            border-right: 30px solid transparent;
+            border-bottom: 60px solid #4285F4; /* Change this color to your preferred color */
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+        }
+        .triangle-botm {
+            width: 0;
+            height: 0;
+            border-left: 30px solid transparent;
+            border-right: 30px solid transparent;
+            border-top: 60px solid #EA4335; /* Change this color to your preferred color */
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+        }
+        .triangle-right {
+            width: 0;
+            height: 0;
+            border-top: 30px solid transparent;
+            border-bottom: 30px solid transparent;
+            border-left: 60px solid #FBBC05; /* 右向きの三角形の色を設定 */
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+        }
+        .triangle-left {
+            width: 0;
+            height: 0;
+            border-top: 30px solid transparent;
+            border-bottom: 30px solid transparent;
+            border-right: 60px solid #34A853; /* 右向きの三角形の色を設定 */
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+        }
+        
+        .btn-custom-rounded {
+            border-radius: 50px;
+        }
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 400px;
+        }
+        .direction-buttons {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .horizontal-buttons {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .horizontal-buttons > div {
+            margin: 0 10px;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        #mouse-position, #drag-distance {
+            font-size: 2em;
+            margin-top: 20px;
+        }
+        .area {
+            width: 300px;
+            height: 300px;
+            margin: 50px auto;
+            border: 2px solid #000;
+            position: relative;
+        }
+        
+
+    </style>
+</head>
+
+<body>
+    <div class="container">
+    <h2> 2WD Radicon Car Controller </h2>
+    
+    <div class="text-center mt-5">
+        <button onclick="controlCAR('high')" class="btn btn-primary btn-custom-rounded btn-dark mt-5">High Speed</button>
+        <button onclick="controlCAR('medium')" class="btn btn-primary btn-custom-rounded btn-dark mt-5">Medium Speed</button>
+        <button onclick="controlCAR('low')" class="btn btn-primary btn-custom-rounded btn-dark mt-5">Low Speed</button>
+    </div>
+    
+    <div class="button-container">
+        <div class="direction-buttons">
+            <div>
+                <button onmouseover="controlCAR('go_forw')" onmouseout="controlCAR('gf_stay')"
+                        ontouchstart="controlCAR('go_forw')" ontouchend="controlCAR('gf_stay')"
+                        class="triangle-button triangle-top">
+                </button>
+                <div class="horizontal-buttons">
+                    <div>
+                        <button onmouseover="controlCAR('turn_left')" onmouseout="controlCAR('tl_stay')"
+                                ontouchstart="controlCAR('turn_left')" ontouchend="controlCAR('tl_stay')"
+                                class="triangle-button triangle-left">
+                        </button>
+                    </div>
+                    <div>
+                        <button onmouseover="controlCAR('turn_right')" onmouseout="controlCAR('tr_stay')"
+                                ontouchstart="controlCAR('turn_right')" ontouchend="controlCAR('tr_stay')"
+                                class="triangle-button triangle-right">
+                        </button>
+                    </div>
+                </div>
+                <div>
+                    <button onmouseover="controlCAR('go_back')" onmouseout="controlCAR('gb_stay')"
+                            ontouchstart="controlCAR('go_back')" ontouchend="controlCAR('gb_stay')"
+                            class="triangle-button triangle-botm">
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <h2>Control radicon car by mouse or touch position</h2>
+    <div id="mouse-area" class="area">
+        <div id="mouse-position">Move your mouse inside the box!</div>
+    </div>
+
+    <h2> Control radicon car by drag distance</h2>
+    <div id="drag-area" class="area">
+        <div id="drag-distance">Drag inside the box!</div>
+    </div>
+
+    <script>
+        function controlCAR(action) {
+            fetch(`/${action}`, {
+                method: 'POST'
+            })
+            .then(response => response.text())
+            .then(data => console.log(data))
+            .catch(error => console.error('Error:', error));
+        }
+        
+        async function sendData(url, data) {
+            try {
+                let response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+                return await response.json();
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+        
+        function getTouchPos(touchEvent) {
+            var rect = touchEvent.target.getBoundingClientRect();
+            var touch = touchEvent.touches[0];
+            return {
+                x: touch.clientX - rect.left,
+                y: touch.clientY - rect.top
+            };
+        }
+        
+        // Mouse or Touch position tracking
+        document.getElementById('mouse-area').addEventListener('mousemove', function(event) {
+            var rect = event.target.getBoundingClientRect();
+            var x = event.clientX - rect.left;
+            var y = event.clientY - rect.top;
+            document.getElementById('mouse-position').textContent = 'X: ' + x + ', Y: ' + y;
+
+            sendData('/update_mouse_position', { x: x, y: y });
+        });
+        document.getElementById('mouse-area').addEventListener('touchmove', function(event) {
+            var pos = getTouchPos(event);
+            document.getElementById('mouse-position').textContent = 'X: ' + pos.x + ', Y: ' + pos.y;
+
+            sendData('/update_mouse_position', { x: pos.x, y: pos.y });
+            event.preventDefault(); // prevent scrolling
+        });
+
+        document.getElementById('mouse-area').addEventListener('mouseleave', function() {
+            document.getElementById('mouse-position').textContent = 'Move your mouse inside the box!';
+        });
+        
+        document.getElementById('mouse-area').addEventListener('mouseleave', function(event) {
+            var rect = event.target.getBoundingClientRect();
+            var x = event.clientX - rect.left;
+            var y = event.clientY - rect.top;
+            document.getElementById('mouse-position').textContent = 'Move your mouse inside the box!';
+
+            sendData('/mouse_leave', { x: x, y: y });
+        });
+        document.getElementById('mouse-area').addEventListener('touchend', function(event) {
+            document.getElementById('mouse-position').textContent = 'Move your mouse or touch inside the box!';
+            sendData('/mouse_leave', { x: 0, y: 0 });
+        });
+        
+        // Drag (by Mouse or Touch) distance tracking
+        var isDragging = false;
+        var startX, startY;
+
+        document.getElementById('drag-area').addEventListener('mousedown', function(event) {
+            isDragging = true;
+            var rect = event.target.getBoundingClientRect();
+            startX = event.clientX - rect.left;
+            startY = event.clientY - rect.top;
+        });
+
+        document.getElementById('drag-area').addEventListener('mousemove', function(event) {
+            if (isDragging) {
+                var rect = event.target.getBoundingClientRect();
+                var currentX = event.clientX - rect.left;
+                var currentY = event.clientY - rect.top;
+                var deltaX = currentX - startX;
+                var deltaY = currentY - startY;
+                document.getElementById('drag-distance').textContent = 'ΔX: ' + deltaX + ', ΔY: ' + deltaY;
+
+                sendData('/update_drag_distance', { deltaX: deltaX, deltaY: deltaY });
+            }
+        });
+        document.getElementById('drag-area').addEventListener('mouseup', function() {
+            isDragging = false;
+            document.getElementById('drag-distance').textContent = 'Drag inside the box!';
+        });
+        document.getElementById('drag-area').addEventListener('mouseleave', function(event) {
+            if (isDragging) {
+                var rect = event.target.getBoundingClientRect();
+                var endX = event.clientX - rect.left;
+                var endY = event.clientY - rect.top;
+                sendData('/end_drag', { startX: startX, startY: startY, endX: endX, endY: endY });
+
+                isDragging = false;
+                document.getElementById('drag-distance').textContent = 'Drag inside the box!';
+            }
+        });
+        document.getElementById('drag-area').addEventListener('mouseleave', function() {
+            if (isDragging) {
+                isDragging = false;
+                document.getElementById('drag-distance').textContent = 'Drag inside the box!';
+            }
+        });
+        
+        document.getElementById('drag-area').addEventListener('touchstart', function(event) {
+            isDragging = true;
+            var pos = getTouchPos(event);
+            startX = pos.x;
+            startY = pos.y;
+        });
+        document.getElementById('drag-area').addEventListener('touchmove', function(event) {
+            if (isDragging) {
+                var pos = getTouchPos(event);
+                var deltaX = pos.x - startX;
+                var deltaY = pos.y - startY;
+                document.getElementById('drag-distance').textContent = 'ΔX: ' + deltaX + ', ΔY: ' + deltaY;
+
+                sendData('/update_drag_distance', { deltaX: deltaX, deltaY: deltaY });
+            }
+            event.preventDefault(); // prevent scrolling
+        });
+        document.getElementById('drag-area').addEventListener('touchend', function(event) {
+            if (isDragging) {
+                isDragging = false;
+            }
+            document.getElementById('drag-distance').textContent = 'Drag or swipe inside the box!';
+            sendData('/end_drag', { x: 0, y: 0 });
+        });
+    </script>
+
+</body>
+</html>
