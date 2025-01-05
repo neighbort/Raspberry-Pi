@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title> Register Command Handle </title>
+        <!--以下はbootstrapの標準クラスを使用する為のコード-->
+        <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    </head>
+
+    <body> 
+        <h2> Completed </h2>
+        <!--以下コントローラ画面に戻るボタンを追加-->
+        <form action="{{url_for('controller')}}", method="POST", novalidate="novalidate">
+            <input type="submit", name="toggle", value="back", class="btn btn-primary"/>
+        </form>
+    </body>
